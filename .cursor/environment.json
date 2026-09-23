@@ -1,0 +1,17 @@
+{
+  "name": "No-Gi Lab",
+  "install": "pnpm install && (test -f .env.local || cp .env.example .env.local)",
+  "terminals": [
+    {
+      "name": "Next.js",
+      "command": "pnpm dev --port 3000",
+      "description": "Dev server at http://localhost:3000 (fixes ERR_CONNECTION_REFUSED when not running)"
+    }
+  ],
+  "ports": [
+    {
+      "name": "web",
+      "port": 3000
+    }
+  ]
+}
