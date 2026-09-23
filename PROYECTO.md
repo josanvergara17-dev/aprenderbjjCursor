@@ -23,6 +23,8 @@ pnpm dev
 
 Abre `http://localhost:3000`. Scripts: `build`, `start`, `lint`.
 
+Atajos de escritorio (doble clic): `scripts/start-nogi-lab.bat` (Windows), `scripts/start-nogi-lab.command` (Mac), `scripts/start-nogi-lab.sh` (Linux/Mac).
+
 ### Supabase real
 
 1. Crea un proyecto en [supabase.com](https://supabase.com).
