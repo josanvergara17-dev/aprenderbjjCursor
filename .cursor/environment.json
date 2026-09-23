@@ -4,8 +4,8 @@
   "terminals": [
     {
       "name": "Next.js",
-      "command": "pnpm dev --port 3000",
-      "description": "Dev server at http://localhost:3000 (fixes ERR_CONNECTION_REFUSED when not running)"
+      "command": "pnpm dev --hostname 0.0.0.0 --port 3000",
+      "description": "Dev server on 0.0.0.0:3000 for Cloud Agent port forwarding / preview"
     }
   ],
   "ports": [
