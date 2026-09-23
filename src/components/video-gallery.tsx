@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { ChevronLeft, ChevronRight, Upload } from "lucide-react";
 import type { AppUser } from "@/lib/auth/types";
+import { isReviewerRole } from "@/lib/auth/types";
 import type { VideoPage } from "@/lib/data/videos";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
@@ -33,7 +34,7 @@ export function VideoGallery({
             {total} vídeos · {data.pageSize} por página (5 columnas × 10 filas)
           </p>
         </div>
-        {user.role === "master" ? (
+        {isReviewerRole(user.role) ? (
           <Button asChild size="lg" className="bg-[#00d4ff] text-[#041018] hover:bg-[#00d4ff]/90">
             <Link href="/videos/subir">
               <Upload />

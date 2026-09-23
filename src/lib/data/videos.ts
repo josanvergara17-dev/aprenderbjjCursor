@@ -5,6 +5,8 @@ import { getMockStore } from "@/lib/mock/store";
 import { isMockMode } from "@/lib/supabase/config";
 import { createClient } from "@/lib/supabase/server";
 
+import type { TechniqueVideoSource } from "@/lib/video/types";
+
 export type VideoPage = {
   items: TechniqueVideo[];
   total: number;
@@ -160,6 +162,78 @@ export async function uploadTechniqueVideoFile(formData: FormData): Promise<Tech
 
   if (error) throw new Error(error.message);
   return mapVideoRow(data as Record<string, unknown>);
+}
+
+function toVideoSource(video: TechniqueVideo): TechniqueVideoSource {
+  return {
+    src: video.videoUrl,
+    poster: video.thumbnailUrl,
+    videoId: video.id,
+  };
+}
+
+export async function getPublishedVideoForTechnique(
+  techniqueId: string,
+): Promise<TechniqueVideoSource | null> {
+  const id = techniqueId.trim();
+  if (!id) return null;
+
+  if (isMockMode()) {
+    const match = getMockStore().videos.find(
+      (video) => video.techniqueId === id,
+    );
+    return match ? toVideoSource(match) : null;
+  }
+
+  const supabase = await createClient();
+  const { data, error } = await supabase
+    .from("technique_videos")
+    .select("*")
+    .eq("technique_id", id)
+    .eq("is_published", true)
+    .order("created_at", { ascending: false })
+    .limit(1)
+    .maybeSingle();
+
+  if (error || !data) return null;
+  return toVideoSource(mapVideoRow(data as Record<string, unknown>));
+}
+
+export async function getPublishedVideoMap(
+  techniqueIds: string[],
+): Promise<Record<string, TechniqueVideoSource>> {
+  const unique = [...new Set(techniqueIds)];
+  const entries = await Promise.all(
+    unique.map(async (techniqueId) => {
+      const source = await getPublishedVideoForTechnique(techniqueId);
+      return [techniqueId, source] as const;
+    }),
+  );
+
+  const map: Record<string, TechniqueVideoSource> = {};
+  for (const [techniqueId, source] of entries) {
+    if (source) map[techniqueId] = source;
+  }
+  return map;
+}
+
+export async function incrementTechniqueVideoViews(videoId: string): Promise<void> {
+  if (isMockMode()) {
+    return;
+  }
+
+  const supabase = await createClient();
+  const { data } = await supabase
+    .from("technique_videos")
+    .select("views_count")
+    .eq("id", videoId)
+    .maybeSingle();
+
+  const current = Number(data?.views_count ?? 0);
+  await supabase
+    .from("technique_videos")
+    .update({ views_count: current + 1 })
+    .eq("id", videoId);
 }
 
 export async function assertCanAccessApp() {

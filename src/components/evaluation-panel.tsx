@@ -7,8 +7,10 @@ import {
   type SubmissionActionState,
 } from "@/app/actions/submissions";
 import type { AppUser, Submission } from "@/lib/auth/types";
+import { isReviewerRole } from "@/lib/auth/types";
 import { TECHNIQUES } from "@/lib/techniques";
 import { Button } from "@/components/ui/button";
+import { VideoPlayer } from "@/components/video-player";
 
 const initialState: SubmissionActionState = {};
 
@@ -156,10 +158,10 @@ function ReviewCard({ submission }: { submission: Submission }) {
           {statusLabel(submission.status)}
         </span>
       </div>
-      <video
-        src={submission.videoUrl}
-        controls
-        className="mb-4 aspect-video w-full rounded-md bg-black"
+      <VideoPlayer
+        source={{ kind: "native", src: submission.videoUrl }}
+        title={submission.techniqueTitle}
+        className="mb-4"
       />
       {submission.status === "pending" ? (
         <form action={formAction} className="flex flex-col gap-3">
@@ -265,11 +267,11 @@ export function EvaluationPanel({
         Revisión de Técnicas
       </h1>
       <p className="mt-1 mb-8 text-sm text-[#8b949e]">
-        {user.role === "master"
+        {isReviewerRole(user.role)
           ? "Reproduce la práctica del alumno y deja calificación con comentario."
           : "Sube tu práctica y consulta el estado de la revisión."}
       </p>
-      {user.role === "master" ? (
+      {isReviewerRole(user.role) ? (
         <MasterEvaluation submissions={submissions} />
       ) : (
         <StudentEvaluation submissions={submissions} />

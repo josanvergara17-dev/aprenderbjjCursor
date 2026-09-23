@@ -162,6 +162,20 @@
   animation: node-pulse 2.4s ease-in-out infinite;
 }
 
+.node-lit-defense {
+  animation: node-pulse-defense 2.4s ease-in-out infinite;
+}
+
+@keyframes node-pulse-defense {
+  0%,
+  100% {
+    box-shadow: 0 0 12px 2px rgb(192 132 252 / 0.35);
+  }
+  50% {
+    box-shadow: 0 0 22px 4px rgb(192 132 252 / 0.45);
+  }
+}
+
 .technique-flow .react-flow__attribution {
   background: transparent;
   color: #8b949e;

@@ -18,12 +18,9 @@ function safeNextPath(next: FormDataEntryValue | null): string {
   return value;
 }
 
-async function setMockSessionCookie(user: {
-  id: string;
-  email: string;
-  fullName: string;
-  role: "student" | "master";
-}) {
+import type { AppUser } from "@/lib/auth/types";
+
+async function setMockSessionCookie(user: AppUser) {
   const cookieStore = await cookies();
   cookieStore.set(MOCK_SESSION_COOKIE, encodeMockSession(user), {
     httpOnly: true,

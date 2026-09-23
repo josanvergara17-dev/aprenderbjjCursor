@@ -58,7 +58,11 @@ export function AppShell({
             <div className="text-right text-xs sm:text-sm">
               <p className="text-[#e6edf3]">{user.fullName || user.email}</p>
               <p className="text-[#8b949e]">
-                {user.role === "master" ? "Maestro" : "Alumno"}
+                {user.role === "admin"
+                  ? "Admin"
+                  : user.role === "master"
+                    ? "Maestro"
+                    : "Alumno"}
               </p>
             </div>
             <form action={logoutAction}>

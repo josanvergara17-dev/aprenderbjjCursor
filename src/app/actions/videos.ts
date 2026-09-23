@@ -2,7 +2,7 @@
 
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
-import { uploadTechniqueVideoFile } from "@/lib/data/videos";
+import { incrementTechniqueVideoViews, uploadTechniqueVideoFile } from "@/lib/data/videos";
 
 export type VideoActionState = {
   error?: string;
@@ -20,4 +20,13 @@ export async function uploadTechniqueAction(
   }
   revalidatePath("/videos");
   redirect("/videos");
+}
+
+export async function recordTechniqueVideoViewAction(videoId: string): Promise<void> {
+  if (!videoId) return;
+  try {
+    await incrementTechniqueVideoViews(videoId);
+  } catch {
+    /* non-blocking analytics */
+  }
 }

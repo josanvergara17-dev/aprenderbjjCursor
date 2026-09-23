@@ -1,5 +1,6 @@
 import { cookies } from "next/headers";
 import type { AppUser } from "@/lib/auth/types";
+import { isReviewerRole } from "@/lib/auth/types";
 import { decodeMockSession, MOCK_SESSION_COOKIE } from "@/lib/mock/session-cookie";
 import { isMockMode } from "@/lib/supabase/config";
 import { createClient } from "@/lib/supabase/server";
@@ -49,7 +50,7 @@ export async function requireUser(): Promise<AppUser> {
 
 export async function requireMaster(): Promise<AppUser> {
   const user = await requireUser();
-  if (user.role !== "master") {
+  if (!isReviewerRole(user.role)) {
     throw new Error("Solo el maestro puede hacer esto");
   }
   return user;

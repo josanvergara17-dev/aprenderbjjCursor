@@ -1,4 +1,8 @@
-export type AppRole = "student" | "master";
+export type AppRole = "student" | "master" | "admin";
+
+export function isReviewerRole(role: AppRole): boolean {
+  return role === "master" || role === "admin";
+}
 
 export type SubmissionStatus = "pending" | "approved" | "needs_improvement";
 

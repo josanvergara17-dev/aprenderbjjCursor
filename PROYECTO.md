@@ -64,9 +64,10 @@ Protección de rutas: `src/proxy.ts` (convención Next.js 16; equivalente al ant
 `path` es el historial de nodos en los que el alumno ha entrado.
 
 - En la raíz solo están iluminadas las posturas base: Montada, Guardia cerrada y Media guardia. El resto se ve apagado.
-- Pulsar un nodo iluminado lo apaga (queda recorrido) y enciende a sus hijos.
-- «Volver atrás» deshace un nivel.
-- Si la técnica no tiene hijos, un aviso lo dice. El reproductor ligado al nodo llega en la fase 3.
+- Pulsar un nodo iluminado abre un modal con la clase oficial (`VideoPlayer`). Al cerrar, el nodo queda recorrido y se encienden sus hijos.
+- Pestaña «Ahora tú» en el modal para enviar práctica de la técnica seleccionada.
+- Defensas (violeta) vs progresiones (cian) en nodos y aristas.
+- «Volver atrás» deshace un nivel; con el modal abierto, solo cierra el modal.
 
 ## Carpetas y archivos
 

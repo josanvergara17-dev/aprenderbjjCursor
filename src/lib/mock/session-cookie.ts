@@ -33,7 +33,7 @@ export function decodeMockSession(value: string | undefined | null): AppUser | n
       typeof parsed.id !== "string" ||
       typeof parsed.email !== "string" ||
       typeof parsed.fullName !== "string" ||
-      (parsed.role !== "student" && parsed.role !== "master")
+      (parsed.role !== "student" && parsed.role !== "master" && parsed.role !== "admin")
     ) {
       return null;
     }

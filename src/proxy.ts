@@ -1,6 +1,7 @@
 import { createServerClient } from "@supabase/ssr";
 import { NextResponse, type NextRequest } from "next/server";
 import type { AppUser } from "@/lib/auth/types";
+import { isReviewerRole } from "@/lib/auth/types";
 import { decodeMockSession, MOCK_SESSION_COOKIE } from "@/lib/mock/session-cookie";
 import { getSupabaseEnv, isMockMode } from "@/lib/supabase/config";
 
@@ -86,7 +87,7 @@ export async function proxy(request: NextRequest) {
     if (user && isPublicPath(pathname)) {
       return redirectTo(request, "/");
     }
-    if (user && isMasterOnly(pathname) && user.role !== "master") {
+    if (user && isMasterOnly(pathname) && !isReviewerRole(user.role)) {
       return redirectTo(request, "/videos");
     }
     return NextResponse.next();
@@ -100,7 +101,7 @@ export async function proxy(request: NextRequest) {
   if (user && isPublicPath(pathname)) {
     return redirectTo(request, "/");
   }
-  if (user && isMasterOnly(pathname) && user.role !== "master") {
+  if (user && isMasterOnly(pathname) && !isReviewerRole(user.role)) {
     return redirectTo(request, "/videos");
   }
 
