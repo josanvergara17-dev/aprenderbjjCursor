@@ -1,29 +1,24 @@
 # No-Gi Lab
 
-Aplicación Next.js (App Router) para enseñar BJJ No-Gi. La fase actual es el mapa conceptual con datos en memoria.
+Aplicación Next.js (App Router) para enseñar BJJ No-Gi.
+
+## Fase actual: 2
+
+Auth + RBAC (`student` | `master`), galería `/videos` y «Revisión de Técnicas» en `/evaluacion`. El mapa de la fase 1 sigue en `/`.
 
 ## Desarrollo
 
 ```bash
 pnpm install
+cp .env.example .env.local
 pnpm dev
 ```
 
-El servidor local queda en el puerto 3000.
+Por defecto `NEXT_PUBLIC_USE_MOCK_AUTH=true` (sin Supabase). Cuentas demo: `alumno@nogi.lab` / `maestro@nogi.lab` — contraseña `demo1234`.
 
-## Estructura
+Para Supabase real: ejecuta `supabase/migrations/001_init.sql`, crea buckets, pon URL + anon key y `NEXT_PUBLIC_USE_MOCK_AUTH=false`.
 
-- `src/app/page.tsx` — página principal; monta el mapa
-- `src/app/layout.tsx` — layout, idioma `es` y fuentes
-- `src/app/globals.css` — Tailwind v4 y tema oscuro
-- `src/components/technique-map.tsx` — estado de navegación (`useState` del historial) y React Flow
-- `src/components/technique-node.tsx` — círculo iluminado, recorrido o apagado
-- `src/lib/techniques.ts` — técnicas de prueba y relaciones `children`
-- `src/components/ui/button.tsx` — botón de shadcn/ui
-- `PROYECTO.md` — mapa de arquitectura
-- `TODO.md` — fases pendientes
-
-No hay API, auth ni almacenamiento. El modal de vídeo, «Ahora Tú» y el panel de admin no están en esta fase.
+Detalle de carpetas: `PROYECTO.md`. Backlog: `TODO.md`.
 
 <!-- BEGIN:nextjs-agent-rules -->
 

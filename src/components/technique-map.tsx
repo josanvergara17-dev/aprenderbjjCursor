@@ -109,13 +109,15 @@ function TechniqueMapCanvas() {
   const atLeaf = path.length > 0 && litIds.length === 0;
 
   return (
-    <div className="flex h-dvh flex-col">
-      <header className="flex flex-col gap-4 border-b border-[#21262d] bg-[#0d1117] px-4 py-4 sm:px-6">
+    <div className="flex h-[calc(100dvh-3.75rem)] flex-col">
+      <header className="flex flex-col gap-3 border-b border-[#21262d] bg-[#0d1117] px-4 py-3 sm:px-6">
         <div className="flex flex-wrap items-start justify-between gap-3">
           <div>
-            <p className="font-heading text-2xl tracking-wide text-[#e6edf3] uppercase">No-Gi Lab</p>
+            <h1 className="font-heading text-xl tracking-wide text-[#e6edf3] uppercase">
+              Mapa de técnicas
+            </h1>
             <p className="mt-1 text-sm text-[#8b949e]">
-              Mapa de técnicas. Pulsa un círculo iluminado: se apaga y se encienden sus variantes.
+              Pulsa un círculo iluminado: se apaga y se encienden sus variantes.
             </p>
           </div>
           <Button variant="outline" onClick={back} disabled={path.length === 0}>

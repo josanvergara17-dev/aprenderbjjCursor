@@ -1,5 +1,5 @@
 import { TechniqueMap } from "@/components/technique-map";
 
-export default function Home() {
+export default function MapPage() {
   return <TechniqueMap />;
 }

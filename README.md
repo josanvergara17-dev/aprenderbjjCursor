@@ -1,12 +1,16 @@
 # No-Gi Lab
 
-Mapa conceptual para aprender Brazilian Jiu-Jitsu No-Gi.
+Plataforma para aprender Brazilian Jiu-Jitsu No-Gi: mapa conceptual, galería de vídeos y revisión de prácticas.
 
 ```bash
 pnpm install
+cp .env.example .env.local
 pnpm dev
 ```
 
-La app queda en `http://localhost:3000`. El mapa de la fase 1 usa técnicas de prueba y no guarda progreso.
+Abre `http://localhost:3000`. Con mock auth (por defecto):
 
-El detalle de carpetas está en `PROYECTO.md`. Lo que falta está en `TODO.md`.
+- Alumno: `alumno@nogi.lab` / `demo1234`
+- Maestro: `maestro@nogi.lab` / `demo1234`
+
+Arquitectura: `PROYECTO.md`. Backlog: `TODO.md`.
