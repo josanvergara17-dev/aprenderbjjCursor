@@ -1,0 +1,23 @@
+# No-Gi Lab — reglas de trabajo
+
+Lee `PROYECTO.md` y `TODO.md` antes de cambiar código. Avanza una fase cada vez.
+
+## Stack
+
+- Next.js 16 App Router, React 19, TypeScript `strict`.
+- Tailwind CSS v4 en `src/app/globals.css`. Sin `tailwind.config`.
+- Mapa: `@xyflow/react`. No sustituirlo por otro grafo salvo que se pida.
+- UI: shadcn/ui y `lucide-react`. Alias `@/` → `src/`.
+- Backend: **Supabase** (Auth + Postgres + Storage). Sin credenciales → modo mock (`NEXT_PUBLIC_USE_MOCK_AUTH=true`).
+- Gestor: pnpm. Node 22.
+
+## Producto
+
+- Interfaz y nombres de técnicas en español. Marca: No-Gi Lab.
+- Tema oscuro. El cian de lo iluminado es `#00d4ff`.
+- Roles: `student` | `master`. `src/proxy.ts` protege rutas; el alumno no entra a vistas solo-maestro.
+- Posturas base iniciales: Montada, Guardia cerrada, Media guardia.
+- Un nodo iluminado, al entrar, se apaga y se iluminan sus `children`. «Volver atrás» deshace el historial.
+- Los datos de prueba del mapa viven en `src/lib/techniques.ts`. `id` en snake_case. Todo `children` debe existir.
+- No marques una fase hecha en `TODO.md` si el código no está en el repo.
+- No commitees `.env`, `node_modules`, `.next` ni secretos. Sí puedes commitear `.env.example`.
