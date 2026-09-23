@@ -28,8 +28,8 @@ Atajos de escritorio (doble clic): `scripts/start-nogi-lab.bat` (Windows), `scri
 ### Supabase real
 
 1. Crea un proyecto en [supabase.com](https://supabase.com).
-2. Ejecuta `supabase/migrations/001_init.sql` en el SQL Editor.
-3. Crea buckets `technique-videos` y `practice-videos` (públicos para lectura de thumbnails/vídeos oficiales; prácticas con políticas según el SQL).
+2. Ejecuta las migraciones `001`, `002` y `003` en el SQL Editor.
+3. Buckets: `technique-videos`, `practice-videos`, `technique-covers` (creados por SQL).
 4. Copia URL y anon key a `.env.local` y pon `NEXT_PUBLIC_USE_MOCK_AUTH=false`.
 5. El primer usuario que se registre con email que contenga `master` obtiene rol `master` (o actualiza `profiles.role` a mano).
 
@@ -39,15 +39,17 @@ Atajos de escritorio (doble clic): `scripts/start-nogi-lab.bat` (Windows), `scri
 | --- | --- | --- |
 | `alumno@nogi.lab` | `demo1234` | student |
 | `maestro@nogi.lab` | `demo1234` | master |
+| `admin@nogi.lab` | `demo1234` | admin |
 
 También puedes registrarte: si el email contiene `master` o `maestro`, el rol será `master`.
 
 ## Roles
 
 - **student**: mapa, galería de solo lectura, subir vídeo de práctica y ver estado.
-- **master**: todo lo del alumno + «Subir Nueva Técnica» en `/videos` + bandeja de revisión en `/evaluacion`.
+- **master** / **admin**: revisión en `/evaluacion`; subida de clases en `/videos/subir`.
+- **admin**: además panel `/admin/techniques`.
 
-Protección de rutas: `src/proxy.ts` (convención Next.js 16; equivalente al antiguo middleware). Sin sesión → `/login`. Rutas `/videos/subir` solo master.
+Protección de rutas: `src/proxy.ts`. `/videos/subir` → reviewer (master/admin). `/admin/*` → admin.
 
 ## Rutas
 
@@ -56,7 +58,8 @@ Protección de rutas: `src/proxy.ts` (convención Next.js 16; equivalente al ant
 | `/login`, `/register` | público | Auth email/contraseña |
 | `/` | autenticado | Mapa de técnicas (fase 1) |
 | `/videos` | autenticado | Galería grid 5 columnas, máx. 50/página |
-| `/videos/subir` | master | Formulario de técnica oficial |
+| `/videos/subir` | master/admin | Subida de clase (Mux o mock) |
+| `/admin/techniques` | admin | Grafo, fotos y conexiones |
 | `/evaluacion` | autenticado | Alumno: envío; Maestro: inbox + nota |
 
 ## Cómo se mueve el mapa
@@ -85,8 +88,27 @@ Protección de rutas: `src/proxy.ts` (convención Next.js 16; equivalente al ant
 | `supabase/migrations/` | Schema SQL + RLS. |
 | `.env.example` | Variables públicas/privadas esperadas. |
 
+## Vídeo: Mux vs Supabase Storage
+
+| Contenido | Dónde | Reproducción |
+| --- | --- | --- |
+| **Clases oficiales** (mapa + galería) | **Mux** (Direct Upload + webhook) | HLS adaptativo vía `VideoPlayer` + hls.js |
+| **Prácticas de alumnos** (`submissions`) | **Supabase Storage** (`practice-videos`) | MP4 progresivo (suficiente para revisión) |
+
+Configura `MUX_TOKEN_ID`, `MUX_TOKEN_SECRET`, `SUPABASE_SERVICE_ROLE_KEY` y el webhook `POST /api/webhooks/mux` en el dashboard de Mux.
+
+Migraciones SQL: `001_init.sql` → `002_techniques_graph.sql` → `003_mux_covers_admin.sql`.
+
+En producción, deja `NEXT_PUBLIC_USE_STATIC_GRAPH_FALLBACK` sin definir para que el mapa dependa de la tabla `techniques` (no del TS estático).
+
+## Admin del mapa
+
+- Ruta `/admin/techniques` solo rol **admin**.
+- CRUD de técnicas, portadas (`technique-covers`), posiciones React Flow y conexiones padre → hijo.
+
 ## Galería
 
 - CSS Grid `grid-cols-5`, thumbnail + título debajo.
+- **Clic en tarjeta** abre reproductor (`VideoPlayer`).
 - Máximo 10 filas = 50 vídeos por página. Paginación: números + Anterior / Siguiente.
-- Botón maestro «Subir Nueva Técnica».
+- Botón maestro «Subir Nueva Técnica» (Mux si está configurado).

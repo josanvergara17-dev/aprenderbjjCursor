@@ -6,6 +6,7 @@ import type { AppRole } from "@/lib/auth/types";
 import { SAMPLE_TECHNIQUE_VIDEO } from "@/lib/auth/types";
 import type { Technique } from "@/lib/techniques";
 import type { TechniqueVideoSource } from "@/lib/video/types";
+import type { VideoSource } from "@/lib/video/types";
 import { MapPracticeUpload } from "@/components/map-practice-upload";
 import {
   Dialog,
@@ -36,12 +37,19 @@ function TechniqueModalBody({
     }
   }, [videoSource?.videoId]);
 
-  const src =
-    videoSource?.src ||
-    (technique.videoUrl.startsWith("https://storage.example")
-      ? SAMPLE_TECHNIQUE_VIDEO
-      : technique.videoUrl) ||
-    SAMPLE_TECHNIQUE_VIDEO;
+  const fallbackNative: VideoSource = {
+    kind: "native",
+    src:
+      (technique.videoUrl.startsWith("https://storage.example")
+        ? SAMPLE_TECHNIQUE_VIDEO
+        : technique.videoUrl) || SAMPLE_TECHNIQUE_VIDEO,
+  };
+
+  const playbackSource: VideoSource = videoSource
+    ? { kind: videoSource.kind, src: videoSource.src, poster: videoSource.poster }
+    : fallbackNative;
+
+  const processing = videoSource?.processingStatus && videoSource.processingStatus !== "ready";
 
   return (
     <>
@@ -80,15 +88,11 @@ function TechniqueModalBody({
       </div>
 
       {tab === "class" ? (
-        <VideoPlayer
-          source={{
-            kind: "native",
-            src,
-            poster: videoSource?.poster,
-          }}
-          title={technique.title}
-          autoPlay
-        />
+        processing ? (
+          <p className="text-sm text-[#8b949e]">El vídeo oficial se está procesando en Mux.</p>
+        ) : (
+          <VideoPlayer source={playbackSource} title={technique.title} autoPlay />
+        )
       ) : (
         <MapPracticeUpload
           techniqueId={technique.id}

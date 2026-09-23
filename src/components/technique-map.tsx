@@ -95,6 +95,7 @@ function TechniqueMapCanvas({
           kind: technique.type,
           status: statusFor(technique.id, path, litSet),
           verified: technique.isVerified,
+          coverImageUrl: technique.coverImageUrl,
         },
         draggable: false,
         selectable: false,

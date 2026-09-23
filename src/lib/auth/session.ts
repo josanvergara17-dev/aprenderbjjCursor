@@ -55,3 +55,11 @@ export async function requireMaster(): Promise<AppUser> {
   }
   return user;
 }
+
+export async function requireAdmin(): Promise<AppUser> {
+  const user = await requireUser();
+  if (user.role !== "admin") {
+    throw new Error("Solo el administrador puede hacer esto");
+  }
+  return user;
+}

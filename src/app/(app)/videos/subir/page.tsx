@@ -4,11 +4,16 @@ import { ArrowLeft } from "lucide-react";
 import { UploadTechniqueForm } from "@/components/upload-technique-form";
 import { Button } from "@/components/ui/button";
 import { getCurrentUser } from "@/lib/auth/session";
+import { isReviewerRole } from "@/lib/auth/types";
+import { isMuxConfigured } from "@/lib/mux/config";
+import { isMockMode } from "@/lib/supabase/config";
 
 export default async function UploadTechniquePage() {
   const user = await getCurrentUser();
   if (!user) redirect("/login");
-  if (user.role !== "master") redirect("/videos");
+  if (!isReviewerRole(user.role)) redirect("/videos");
+
+  const muxEnabled = !isMockMode() && isMuxConfigured();
 
   return (
     <div className="mx-auto max-w-7xl px-4 py-6 sm:px-6">
@@ -24,7 +29,7 @@ export default async function UploadTechniquePage() {
       <p className="mb-8 text-sm text-[#8b949e]">
         Publica un vídeo oficial que aparecerá en la galería para todos los alumnos.
       </p>
-      <UploadTechniqueForm />
+      <UploadTechniqueForm muxEnabled={muxEnabled} />
     </div>
   );
 }

@@ -14,6 +14,8 @@ const links = [
   { href: "/evaluacion", label: "Evaluación" },
 ] as const;
 
+const adminLink = { href: "/admin/techniques", label: "Admin mapa" } as const;
+
 export function AppShell({
   user,
   children,
@@ -52,6 +54,19 @@ export function AppShell({
                   </Link>
                 );
               })}
+              {user.role === "admin" ? (
+                <Link
+                  href={adminLink.href}
+                  className={cn(
+                    "rounded-md px-3 py-1.5 text-sm transition-colors",
+                    pathname.startsWith("/admin")
+                      ? "bg-[#123044] text-[#00d4ff]"
+                      : "text-[#8b949e] hover:bg-[#161b22] hover:text-[#e6edf3]",
+                  )}
+                >
+                  {adminLink.label}
+                </Link>
+              ) : null}
             </nav>
           </div>
           <div className="flex items-center gap-3">

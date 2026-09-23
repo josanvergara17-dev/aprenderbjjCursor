@@ -6,7 +6,9 @@ import { decodeMockSession, MOCK_SESSION_COOKIE } from "@/lib/mock/session-cooki
 import { getSupabaseEnv, isMockMode } from "@/lib/supabase/config";
 
 const PUBLIC_PATHS = new Set(["/login", "/register"]);
+const WEBHOOK_PREFIXES = ["/api/webhooks/"];
 const MASTER_ONLY_PREFIXES = ["/videos/subir"];
+const ADMIN_ONLY_PREFIXES = ["/admin"];
 
 function isPublicPath(pathname: string) {
   return PUBLIC_PATHS.has(pathname);
@@ -16,6 +18,16 @@ function isMasterOnly(pathname: string) {
   return MASTER_ONLY_PREFIXES.some(
     (prefix) => pathname === prefix || pathname.startsWith(`${prefix}/`),
   );
+}
+
+function isAdminOnly(pathname: string) {
+  return ADMIN_ONLY_PREFIXES.some(
+    (prefix) => pathname === prefix || pathname.startsWith(`${prefix}/`),
+  );
+}
+
+function isWebhookPath(pathname: string) {
+  return WEBHOOK_PREFIXES.some((prefix) => pathname.startsWith(prefix));
 }
 
 function readMockUser(request: NextRequest): AppUser | null {
@@ -78,6 +90,10 @@ function redirectTo(request: NextRequest, pathname: string, next?: string) {
 export async function proxy(request: NextRequest) {
   const { pathname } = request.nextUrl;
 
+  if (isWebhookPath(pathname)) {
+    return NextResponse.next();
+  }
+
   if (isMockMode()) {
     const user = readMockUser(request);
 
@@ -89,6 +105,9 @@ export async function proxy(request: NextRequest) {
     }
     if (user && isMasterOnly(pathname) && !isReviewerRole(user.role)) {
       return redirectTo(request, "/videos");
+    }
+    if (user && isAdminOnly(pathname) && user.role !== "admin") {
+      return redirectTo(request, "/");
     }
     return NextResponse.next();
   }
@@ -103,6 +122,9 @@ export async function proxy(request: NextRequest) {
   }
   if (user && isMasterOnly(pathname) && !isReviewerRole(user.role)) {
     return redirectTo(request, "/videos");
+  }
+  if (user && isAdminOnly(pathname) && user.role !== "admin") {
+    return redirectTo(request, "/");
   }
 
   return response;

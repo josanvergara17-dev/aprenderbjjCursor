@@ -22,29 +22,49 @@ function thumbnailFor(title: string): string {
   return `https://placehold.co/640x360/0d1117/00d4ff/png?text=${label}&font=oswald`;
 }
 
+function videoFields(
+  partial: Omit<
+    TechniqueVideo,
+    "streamKind" | "muxAssetId" | "muxPlaybackId" | "muxUploadId" | "processingStatus"
+  >,
+): TechniqueVideo {
+  return {
+    ...partial,
+    streamKind: "storage",
+    muxAssetId: null,
+    muxPlaybackId: null,
+    muxUploadId: null,
+    processingStatus: "ready",
+  };
+}
+
 function seedVideos(): TechniqueVideo[] {
-  const base = TECHNIQUES.map((technique, index) => ({
-    id: `seed-${technique.id}`,
-    title: technique.title,
-    thumbnailUrl: thumbnailFor(technique.title),
-    videoUrl: SAMPLE_TECHNIQUE_VIDEO,
-    techniqueId: technique.id,
-    uploadedBy: "user-master",
-    createdAt: new Date(Date.UTC(2026, 0, 1 + index)).toISOString(),
-  }));
+  const base = TECHNIQUES.map((technique, index) =>
+    videoFields({
+      id: `seed-${technique.id}`,
+      title: technique.title,
+      thumbnailUrl: thumbnailFor(technique.title),
+      videoUrl: SAMPLE_TECHNIQUE_VIDEO,
+      techniqueId: technique.id,
+      uploadedBy: "user-master",
+      createdAt: new Date(Date.UTC(2026, 0, 1 + index)).toISOString(),
+    }),
+  );
 
   const extras: TechniqueVideo[] = [];
   for (let i = 1; i <= 40; i += 1) {
     const title = `Drill No-Gi #${String(i).padStart(2, "0")}`;
-    extras.push({
-      id: `seed-drill-${i}`,
-      title,
-      thumbnailUrl: thumbnailFor(title),
-      videoUrl: SAMPLE_TECHNIQUE_VIDEO,
-      techniqueId: null,
-      uploadedBy: "user-master",
-      createdAt: new Date(Date.UTC(2026, 1, i)).toISOString(),
-    });
+    extras.push(
+      videoFields({
+        id: `seed-drill-${i}`,
+        title,
+        thumbnailUrl: thumbnailFor(title),
+        videoUrl: SAMPLE_TECHNIQUE_VIDEO,
+        techniqueId: null,
+        uploadedBy: "user-master",
+        createdAt: new Date(Date.UTC(2026, 1, i)).toISOString(),
+      }),
+    );
   }
 
   return [...base, ...extras].sort(
@@ -67,6 +87,13 @@ function createStore(): MockStore {
         email: "maestro@nogi.lab",
         fullName: "Maestro Demo",
         role: "master",
+        password: "demo1234",
+      },
+      {
+        id: "user-admin",
+        email: "admin@nogi.lab",
+        fullName: "Admin Demo",
+        role: "admin",
         password: "demo1234",
       },
     ],
@@ -99,6 +126,7 @@ export function getMockStore(): MockStore {
 
 export function inferRoleFromEmail(email: string): AppRole {
   const lower = email.toLowerCase();
+  if (lower.includes("admin")) return "admin";
   if (lower.includes("master") || lower.includes("maestro")) return "master";
   return "student";
 }

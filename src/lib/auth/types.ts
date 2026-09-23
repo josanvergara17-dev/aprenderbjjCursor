@@ -21,6 +21,11 @@ export type TechniqueVideo = {
   techniqueId: string | null;
   uploadedBy: string | null;
   createdAt: string;
+  streamKind: "storage" | "mux";
+  muxAssetId: string | null;
+  muxPlaybackId: string | null;
+  muxUploadId: string | null;
+  processingStatus: "pending_upload" | "processing" | "ready" | "error";
 };
 
 export type Submission = {

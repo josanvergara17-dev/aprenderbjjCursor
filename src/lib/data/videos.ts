@@ -1,10 +1,11 @@
 import { requireMaster, requireUser } from "@/lib/auth/session";
 import type { TechniqueVideo } from "@/lib/auth/types";
 import { SAMPLE_TECHNIQUE_VIDEO, VIDEOS_PER_PAGE } from "@/lib/auth/types";
+import { isMuxConfigured } from "@/lib/mux/config";
 import { getMockStore } from "@/lib/mock/store";
 import { isMockMode } from "@/lib/supabase/config";
 import { createClient } from "@/lib/supabase/server";
-
+import { techniqueVideoToMapSource } from "@/lib/video/resolve-playback";
 import type { TechniqueVideoSource } from "@/lib/video/types";
 
 export type VideoPage = {
@@ -24,7 +25,17 @@ function mapVideoRow(row: Record<string, unknown>): TechniqueVideo {
     techniqueId: (row.technique_id as string | null) ?? null,
     uploadedBy: (row.uploaded_by as string | null) ?? null,
     createdAt: String(row.created_at),
+    streamKind: (row.stream_kind as TechniqueVideo["streamKind"] | undefined) ?? "storage",
+    muxAssetId: (row.mux_asset_id as string | null) ?? null,
+    muxPlaybackId: (row.mux_playback_id as string | null) ?? null,
+    muxUploadId: (row.mux_upload_id as string | null) ?? null,
+    processingStatus:
+      (row.processing_status as TechniqueVideo["processingStatus"] | undefined) ?? "ready",
   };
+}
+
+function toVideoSource(video: TechniqueVideo): TechniqueVideoSource {
+  return techniqueVideoToMapSource(video);
 }
 
 export async function listTechniqueVideos(page = 1): Promise<VideoPage> {
@@ -88,6 +99,11 @@ export async function createTechniqueVideo(input: {
       techniqueId: input.techniqueId?.trim() || null,
       uploadedBy: master.id,
       createdAt: new Date().toISOString(),
+      streamKind: "storage",
+      muxAssetId: null,
+      muxPlaybackId: null,
+      muxUploadId: null,
+      processingStatus: "ready",
     };
     getMockStore().videos.unshift(video);
     return video;
@@ -130,6 +146,10 @@ export async function uploadTechniqueVideoFile(formData: FormData): Promise<Tech
     });
   }
 
+  if (isMuxConfigured()) {
+    throw new Error("Usa el formulario de subida con Mux (Direct Upload)");
+  }
+
   if (!(file instanceof File) || file.size === 0) {
     throw new Error("Selecciona un archivo de vídeo");
   }
@@ -164,12 +184,31 @@ export async function uploadTechniqueVideoFile(formData: FormData): Promise<Tech
   return mapVideoRow(data as Record<string, unknown>);
 }
 
-function toVideoSource(video: TechniqueVideo): TechniqueVideoSource {
-  return {
-    src: video.videoUrl,
-    poster: video.thumbnailUrl,
-    videoId: video.id,
-  };
+export async function createPendingMuxTechniqueVideo(input: {
+  title: string;
+  techniqueId?: string;
+}): Promise<TechniqueVideo> {
+  const master = await requireMaster();
+  const title = input.title.trim();
+  if (!title) throw new Error("El título es obligatorio");
+
+  const supabase = await createClient();
+  const { data, error } = await supabase
+    .from("technique_videos")
+    .insert({
+      title,
+      thumbnail_url: `https://placehold.co/640x360/0d1117/00d4ff/png?text=${encodeURIComponent(title.slice(0, 24))}`,
+      video_url: "",
+      technique_id: input.techniqueId?.trim() || null,
+      uploaded_by: master.id,
+      stream_kind: "mux",
+      processing_status: "pending_upload",
+    })
+    .select("*")
+    .single();
+
+  if (error) throw new Error(error.message);
+  return mapVideoRow(data as Record<string, unknown>);
 }
 
 export async function getPublishedVideoForTechnique(
@@ -191,6 +230,7 @@ export async function getPublishedVideoForTechnique(
     .select("*")
     .eq("technique_id", id)
     .eq("is_published", true)
+    .eq("processing_status", "ready")
     .order("created_at", { ascending: false })
     .limit(1)
     .maybeSingle();

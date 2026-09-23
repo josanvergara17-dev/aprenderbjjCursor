@@ -11,7 +11,12 @@ export type Technique = {
   x: number;
   y: number;
   isVerified?: boolean;
+  coverImageUrl?: string;
 };
+
+export function defaultTechniqueCoverUrl(techniqueId: string): string {
+  return `https://picsum.photos/seed/nogi-${techniqueId}/240/240`;
+}
 
 export const TECHNIQUES: Technique[] = [
   {
@@ -23,6 +28,7 @@ export const TECHNIQUES: Technique[] = [
     x: 40,
     y: 0,
     isVerified: true,
+    coverImageUrl: defaultTechniqueCoverUrl("montada"),
   },
   {
     id: "guardia_cerrada",
@@ -171,6 +177,10 @@ export const TECHNIQUES: Technique[] = [
     y: 450,
   },
 ];
+
+for (const technique of TECHNIQUES) {
+  technique.coverImageUrl ??= defaultTechniqueCoverUrl(technique.id);
+}
 
 export const techniqueById: Record<string, Technique> = Object.fromEntries(
   TECHNIQUES.map((technique) => [technique.id, technique]),

@@ -1,4 +1,4 @@
-import { TECHNIQUES, indexTechniques, validateTechniqueGraph, type Technique } from "@/lib/techniques";
+import { TECHNIQUES, defaultTechniqueCoverUrl, indexTechniques, validateTechniqueGraph, type Technique } from "@/lib/techniques";
 import { isMockMode } from "@/lib/supabase/config";
 import { createClient } from "@/lib/supabase/server";
 
@@ -18,6 +18,9 @@ function mapDbType(value: string): Technique["type"] {
 }
 
 export async function loadTechniqueGraph(): Promise<TechniqueGraph> {
+  const allowStaticFallback =
+    isMockMode() || process.env.NEXT_PUBLIC_USE_STATIC_GRAPH_FALLBACK === "true";
+
   if (isMockMode()) {
     return { techniques: TECHNIQUES, source: "static" };
   }
@@ -26,7 +29,10 @@ export async function loadTechniqueGraph(): Promise<TechniqueGraph> {
   const { data: rows, error } = await supabase.from("techniques").select("*").order("id");
 
   if (error || !rows?.length) {
-    return { techniques: TECHNIQUES, source: "static" };
+    if (allowStaticFallback) {
+      return { techniques: TECHNIQUES, source: "static" };
+    }
+    return { techniques: [], source: "database" };
   }
 
   const { data: connections } = await supabase
@@ -54,6 +60,9 @@ export async function loadTechniqueGraph(): Promise<TechniqueGraph> {
       x: Number(row.position_x ?? row.x ?? 0),
       y: Number(row.position_y ?? row.y ?? 0),
       isVerified: Boolean(row.is_verified),
+      coverImageUrl:
+        (row.cover_image_url as string | null) ??
+        defaultTechniqueCoverUrl(id),
     };
   });
 

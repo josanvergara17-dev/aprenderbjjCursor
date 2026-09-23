@@ -3,6 +3,7 @@ import { ChevronLeft, ChevronRight, Upload } from "lucide-react";
 import type { AppUser } from "@/lib/auth/types";
 import { isReviewerRole } from "@/lib/auth/types";
 import type { VideoPage } from "@/lib/data/videos";
+import { VideoPlaybackDialog } from "@/components/video-playback-dialog";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 
@@ -49,21 +50,7 @@ export function VideoGallery({
           Todavía no hay vídeos en la galería.
         </p>
       ) : (
-        <ul className="grid grid-cols-5 gap-3 max-md:grid-cols-2 max-lg:grid-cols-3">
-          {items.map((video) => (
-            <li key={video.id} className="group">
-              <article className="overflow-hidden rounded-lg border border-[#21262d] bg-[#0d1117] transition group-hover:border-[#00d4ff]/40">
-                {/* eslint-disable-next-line @next/next/no-img-element */}
-                <img
-                  src={video.thumbnailUrl}
-                  alt=""
-                  className="aspect-video w-full object-cover bg-[#161b22]"
-                />
-                <h2 className="px-2 py-2 text-sm text-[#e6edf3] line-clamp-2">{video.title}</h2>
-              </article>
-            </li>
-          ))}
-        </ul>
+        <VideoPlaybackDialog videos={items} />
       )}
 
       {totalPages > 1 ? (

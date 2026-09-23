@@ -10,6 +10,7 @@ export type TechniqueNodeData = {
   status: NodeVisualStatus;
   kind: TechniqueType;
   verified?: boolean;
+  coverImageUrl?: string;
 };
 
 export type TechniqueFlowNode = Node<TechniqueNodeData, "technique">;
@@ -58,9 +59,18 @@ export function TechniqueNode({ data }: NodeProps<TechniqueFlowNode>) {
           className="!size-2 !border-0 !bg-transparent"
         />
         <div
-          className={`size-[76px] rounded-full border-2 ${circleClasses(data.kind, data.status)} ${lit ? "cursor-pointer" : "cursor-default"}`}
+          className={`size-[76px] overflow-hidden rounded-full border-2 ${circleClasses(data.kind, data.status)} ${lit ? "cursor-pointer" : "cursor-default"}`}
           aria-hidden
-        />
+        >
+          {data.coverImageUrl ? (
+            // eslint-disable-next-line @next/next/no-img-element
+            <img
+              src={data.coverImageUrl}
+              alt=""
+              className={`size-full object-cover ${data.status === "asleep" ? "grayscale" : ""} ${data.status === "path" ? "opacity-70" : ""}`}
+            />
+          ) : null}
+        </div>
         {data.verified ? (
           <span
             className="absolute -top-1 -right-1 size-2.5 rounded-full bg-emerald-400 ring-2 ring-[#0d1117]"
