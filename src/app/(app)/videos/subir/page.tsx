@@ -7,12 +7,20 @@ import { getCurrentUser } from "@/lib/auth/session";
 import { isReviewerRole } from "@/lib/auth/types";
 import { isMuxConfigured } from "@/lib/mux/config";
 import { isMockMode } from "@/lib/supabase/config";
+import { listTechniqueSelectOptions } from "@/lib/data/techniques";
 
-export default async function UploadTechniquePage() {
+export default async function UploadTechniquePage({
+  searchParams,
+}: {
+  searchParams: Promise<{ techniqueId?: string }>;
+}) {
   const user = await getCurrentUser();
   if (!user) redirect("/login");
   if (!isReviewerRole(user.role)) redirect("/videos");
 
+  const params = await searchParams;
+  const initialTechniqueId = String(params.techniqueId ?? "").trim();
+  const techniques = await listTechniqueSelectOptions();
   const muxEnabled = !isMockMode() && isMuxConfigured();
 
   return (
@@ -29,7 +37,13 @@ export default async function UploadTechniquePage() {
       <p className="mb-8 text-sm text-[#8b949e]">
         Publica un vídeo oficial que aparecerá en la galería para todos los alumnos.
       </p>
-      <UploadTechniqueForm muxEnabled={muxEnabled} />
+      <UploadTechniqueForm
+        muxEnabled={muxEnabled}
+        techniques={techniques}
+        initialTechniqueId={
+          techniques.some((t) => t.id === initialTechniqueId) ? initialTechniqueId : ""
+        }
+      />
     </div>
   );
 }

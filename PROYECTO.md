@@ -60,6 +60,7 @@ Protección de rutas: `src/proxy.ts`. `/videos/subir` → reviewer (master/admin
 | `/videos` | autenticado | Galería grid 5 columnas, máx. 50/página |
 | `/videos/subir` | master/admin | Subida de clase (Mux o mock) |
 | `/admin/techniques` | admin | Grafo, fotos y conexiones |
+| `/admin/media` | admin | Portadas en lote + enlace a subir vídeo por nodo |
 | `/evaluacion` | autenticado | Alumno: envío; Maestro: inbox + nota |
 
 ## Cómo se mueve el mapa

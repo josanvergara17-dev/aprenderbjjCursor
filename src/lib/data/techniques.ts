@@ -17,6 +17,11 @@ function mapDbType(value: string): Technique["type"] {
   return "progression";
 }
 
+export async function listTechniqueSelectOptions(): Promise<{ id: string; title: string }[]> {
+  const { techniques } = await loadTechniqueGraph();
+  return techniques.map((technique) => ({ id: technique.id, title: technique.title }));
+}
+
 export async function loadTechniqueGraph(): Promise<TechniqueGraph> {
   const allowStaticFallback =
     isMockMode() || process.env.NEXT_PUBLIC_USE_STATIC_GRAPH_FALLBACK === "true";

@@ -2,6 +2,7 @@ import { requireAdmin } from "@/lib/auth/session";
 import type { Technique } from "@/lib/techniques";
 import { isMockMode } from "@/lib/supabase/config";
 import { createClient } from "@/lib/supabase/server";
+import { uploadTechniqueCoverFile } from "@/lib/data/technique-covers";
 
 export type AdminTechniqueRow = Technique & { childIds: string[] };
 
@@ -83,15 +84,7 @@ export async function upsertTechniqueAdmin(formData: FormData): Promise<void> {
   let coverImageUrl: string | null = null;
 
   if (coverFile instanceof File && coverFile.size > 0) {
-    const path = `${id}/${Date.now()}-${coverFile.name}`;
-    const { error: uploadError } = await supabase.storage
-      .from("technique-covers")
-      .upload(path, coverFile, { contentType: coverFile.type || "image/jpeg", upsert: true });
-    if (uploadError) throw new Error(uploadError.message);
-    const {
-      data: { publicUrl },
-    } = supabase.storage.from("technique-covers").getPublicUrl(path);
-    coverImageUrl = publicUrl;
+    coverImageUrl = await uploadTechniqueCoverFile(id, coverFile);
   }
 
   const patch: Record<string, unknown> = {

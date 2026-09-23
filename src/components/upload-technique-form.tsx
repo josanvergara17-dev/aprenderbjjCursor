@@ -3,12 +3,19 @@
 import { useActionState, useState } from "react";
 import { useRouter } from "next/navigation";
 import { uploadTechniqueAction, type VideoActionState } from "@/app/actions/videos";
-import { TECHNIQUES } from "@/lib/techniques";
 import { Button } from "@/components/ui/button";
+
+export type TechniqueSelectOption = { id: string; title: string };
 
 const initialState: VideoActionState = {};
 
-function LegacyUploadForm() {
+function LegacyUploadForm({
+  techniques,
+  initialTechniqueId,
+}: {
+  techniques: TechniqueSelectOption[];
+  initialTechniqueId: string;
+}) {
   const [state, formAction, pending] = useActionState(uploadTechniqueAction, initialState);
 
   return (
@@ -33,10 +40,10 @@ function LegacyUploadForm() {
           id="techniqueId"
           name="techniqueId"
           className="w-full rounded-lg border border-[#21262d] bg-[#0d1117] px-3 py-2 text-[#e6edf3] outline-none focus:border-[#00d4ff]"
-          defaultValue=""
+          defaultValue={initialTechniqueId}
         >
           <option value="">Sin enlace</option>
-          {TECHNIQUES.map((technique) => (
+          {techniques.map((technique) => (
             <option key={technique.id} value={technique.id}>
               {technique.title}
             </option>
@@ -70,10 +77,16 @@ function LegacyUploadForm() {
   );
 }
 
-function MuxUploadForm() {
+function MuxUploadForm({
+  techniques,
+  initialTechniqueId,
+}: {
+  techniques: TechniqueSelectOption[];
+  initialTechniqueId: string;
+}) {
   const router = useRouter();
   const [title, setTitle] = useState("");
-  const [techniqueId, setTechniqueId] = useState("");
+  const [techniqueId, setTechniqueId] = useState(initialTechniqueId);
   const [file, setFile] = useState<File | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [pending, setPending] = useState(false);
@@ -148,7 +161,7 @@ function MuxUploadForm() {
           className="w-full rounded-lg border border-[#21262d] bg-[#0d1117] px-3 py-2 text-[#e6edf3] outline-none focus:border-[#00d4ff]"
         >
           <option value="">Sin enlace</option>
-          {TECHNIQUES.map((technique) => (
+          {techniques.map((technique) => (
             <option key={technique.id} value={technique.id}>
               {technique.title}
             </option>
@@ -179,6 +192,15 @@ function MuxUploadForm() {
   );
 }
 
-export function UploadTechniqueForm({ muxEnabled }: { muxEnabled: boolean }) {
-  return muxEnabled ? <MuxUploadForm /> : <LegacyUploadForm />;
+export function UploadTechniqueForm({
+  muxEnabled,
+  techniques,
+  initialTechniqueId = "",
+}: {
+  muxEnabled: boolean;
+  techniques: TechniqueSelectOption[];
+  initialTechniqueId?: string;
+}) {
+  const props = { techniques, initialTechniqueId };
+  return muxEnabled ? <MuxUploadForm {...props} /> : <LegacyUploadForm {...props} />;
 }
