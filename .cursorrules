@@ -1,0 +1,39 @@
+# Directrices estrictas
+
+Estas reglas se deducen del estado real del repositorio. No hay código de aplicación, así que no existe un lenguaje, un framework ni un formateador que heredar. Hasta que eso cambie, se cumple lo siguiente.
+
+## Estado que manda
+
+- El único archivo de proyecto previo es `README.md`, y está vacío (solo un salto de línea).
+- No hay carpetas de código. `.git` no forma parte de la aplicación.
+- El historial tiene un commit: `Add initial README file`.
+- No se inventan stacks, dependencias, carpetas ni convenciones que el repositorio no tenga.
+
+## Idioma
+
+- La documentación de trabajo del proyecto (`README.md`, `PROYECTO.md`, `TODO.md` y reglas) se escribe en español.
+- Los mensajes de commit siguen el único estilo presente: inglés, verbo en imperativo, una frase, sin punto final. Ejemplo: `Add initial README file`.
+
+## Documentación
+
+- Markdown es el único formato de documentación del repositorio.
+- `README.md` es el punto de entrada. En cuanto el proyecto tenga un propósito, debe describirlo: qué es, cómo se ejecuta y cómo se prueba. No se deja vacío de forma permanente.
+- Encabezados con `#`, en orden jerárquico, sin saltar niveles.
+- Listas con guion (`-`).
+- Tareas con casillas: `- [ ]` pendiente, `- [x]` hecha.
+- Frases completas y directas. Sin relleno.
+
+## Código (cuando exista)
+
+- No se elige lenguaje ni framework por adelantado. La primera decisión de stack se documenta en `PROYECTO.md` y, a partir de ahí, todo el código nuevo usa ese mismo lenguaje y ese mismo framework.
+- No se mezclan lenguajes para el mismo tipo de módulo.
+- No se añaden gestores de paquetes, lockfiles ni configuración de herramientas hasta que el stack esté elegido.
+- Cada carpeta nueva corresponde a código o documentación que ya existe. No se crea estructura especulativa.
+- Los nombres de archivos y símbolos siguen el idioma y la convención del primer módulo real que se añada. Hasta entonces no hay convención de identificadores que aplicar.
+
+## Git
+
+- Un cambio coherente por commit.
+- No se commitean secretos, credenciales ni archivos generados.
+- `PROYECTO.md` se actualiza cuando cambie la estructura de carpetas.
+- `TODO.md` se actualiza cuando se cierre o se abra trabajo visible.
