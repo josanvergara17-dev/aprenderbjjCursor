@@ -1,47 +1,21 @@
 # No-Gi Lab — reglas de trabajo
 
-Lee `PROYECTO.md` y `TODO.md` antes de cambiar código. No reescribas la app entera; cambia solo lo pedido.
+Lee `PROYECTO.md` y `TODO.md` antes de cambiar código. Avanza una fase cada vez. No implementes vídeo, subidas, auth ni panel de admin hasta que se pida esa fase.
 
-## Stack (no sustituir)
+## Stack
 
-- TypeScript 5.7, `strict: true`. React 19 + React DOM 19. Vite 8.
-- Tailwind CSS v4 vía `@tailwindcss/vite`. Tema en `src/index.css` (`@import 'tailwindcss'` + `@theme`). No hay `tailwind.config` ni PostCSS.
-- Alias `@` → `src/`. Formato: `oxfmt`. Gestor: pnpm. Node 22.
-- Componentes funcionales, hooks de React, JSX (`react-jsx`). Sin clases de componentes. Sin Redux/Zustand/router todavía.
+- Next.js 16 App Router, React 19, TypeScript `strict`.
+- Tailwind CSS v4 en `src/app/globals.css`. Sin `tailwind.config`.
+- Mapa: `@xyflow/react`. No sustituirlo por otro grafo salvo que se pida.
+- UI: shadcn/ui y `lucide-react`. Alias `@/` → `src/`.
+- Gestor: pnpm. Node 22.
 
-## Idioma y producto
+## Producto
 
-- UI, copy, nombres de técnicas (`node.es`) y comentarios de dominio: **español**.
-- Comentarios de sección en código: el estilo existente (`─── Título ───`).
-- Marca: **No-Gi Lab**. Paleta oscura (GitHub-like + cian `#00d4ff`). Fuentes: Oswald (títulos), Inter (cuerpo).
-
-## Datos y dominio
-
-- El grafo vive en `src/data.ts`: tipos `BJJNode`, `NodeStatus`, `Category` y `INITIAL_NODES`.
-- Categorías: `position` | `submission` | `sweep` | `takedown` | `escape`. Dificultad: `1 | 2 | 3`.
-- Estados: `locked` | `available` | `completed`. Un nodo se desbloquea solo si **todos** sus `parents` están `completed`.
-- Colores de categoría/dificultad: `CAT_COLOR`, `CAT_ES`, `DIFF_ES`, `DIFF_COLOR`. No inventar paletas paralelas.
-- Al añadir técnicas: `id` estable en snake_case, `parents`/`children` bidireccionales, `x`/`y` coherentes con el SVG (aprox. filas y=80 / 255 / 420, ancho ~1050).
-
-## UI y estilo
-
-- Layout: header + tabs (`mapa` | `tecnicas` | `ahorat`) + main + footer. No añadir librerías de UI (no MUI, no shadcn) salvo que se pida.
-- Estilos: Tailwind para layout/spacing; colores de marca a menudo en `style={{}}` con hex del tema (`#05080f`, `#0d1117`, `#161b22`, `#21262d`, `#e6edf3`, `#8b949e`, `#00d4ff`, `#4ade80`).
-- Nodos del mapa: SVG, radios por fila (`nodeRadius`), glow/pulse CSS existentes (`.node-pulse`, `.map-scroll`). Nodos `locked` no abren modal.
-- Modales: overlay blur, cierre por clic fuera y botón ✕, `stopPropagation` en el panel.
-- Formularios: inputs oscuros, borde `#21262d`, focus cian. Validación mínima: campos marcados con `*`.
-
-## Arquitectura de código
-
-- Hoy casi toda la UI está en `src/App.tsx`. Si un archivo supera ~200–250 líneas al extraer, separar por vista/componente (`MapView`, `TechniquesView`, `AhoraTuView`, `NodeModal`) manteniendo la misma API de props.
-- Estado de progreso: `useState` sobre `nodes`. Al persistir, no cambiar el modelo `BJJNode` sin actualizar `data.ts` y el desbloqueo.
-- Tipos explícitos en props y datos. Evitar `any`. Callbacks con `useCallback`; listas derivadas con `useMemo`.
-- No meter lógica de Figma Make (plugins en `vite.config.ts`, `.figma/`) salvo bugs de build/preview.
-
-## Qué no hacer
-
-- No añadir backend, auth, ni dependencias nuevas sin que se pida.
-- No copiar vídeos/placeholder como si fueran player real; el hueco de vídeo es intencional hasta que haya assets.
-- No traducir la UI a inglés. No cambiar el sistema de desbloqueo del grafo sin acuerdo.
-- No rellenar `TODO.md` como “hecho” si el código no está en el repo.
-- No commitear `.env`, `node_modules`, `dist/` ni secretos.
+- Interfaz y nombres de técnicas en español. Marca: No-Gi Lab.
+- Tema oscuro. El cian de lo iluminado es `#00d4ff`.
+- Posturas base iniciales: Montada, Guardia cerrada, Media guardia.
+- Un nodo iluminado, al entrar, se apaga y se iluminan sus `children`. «Volver atrás» deshace el historial.
+- Los datos de prueba viven en `src/lib/techniques.ts`. `id` en snake_case. Todo `children` debe existir.
+- No marques una fase hecha en `TODO.md` si el código no está en el repo.
+- No commitees `.env`, `node_modules`, `.next` ni secretos.

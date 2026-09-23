@@ -19,3 +19,9 @@ logs/
 # beside it.
 /.plugins/
 /.opencode-skills/
+
+# next.js
+/.next/
+/out/
+.vercel
+

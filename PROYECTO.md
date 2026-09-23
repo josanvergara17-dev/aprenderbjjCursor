@@ -1,10 +1,18 @@
 # No-Gi Lab — mapa del proyecto
 
-Aplicación web de aprendizaje **No-Gi BJJ**: mapa de técnicas desbloqueable, catálogo filtrable y envío de vídeos al instructor (“Ahora Tú”).
+Aplicación web para enseñar **BJJ No-Gi**. El núcleo es un mapa conceptual de técnicas y, más adelante, feedback en vídeo.
 
-Origen: export de **Figma Make**. Stack: React 19, TypeScript, Vite 8, Tailwind CSS v4, pnpm.
+Fase actual: **1, mockup visual**. El mapa usa datos fijos en código. No hay modal de vídeo, subida de archivos, auth ni base de datos.
 
-Hoy es un **prototipo de frontend**: todo el estado vive en memoria (se pierde al recargar). No hay API, auth ni persistencia.
+## Stack
+
+- Next.js 16 (App Router), React 19, TypeScript strict
+- Tailwind CSS v4
+- React Flow (`@xyflow/react`) para nodos y conexiones
+- shadcn/ui (Radix) y Lucide para la interfaz
+- pnpm, Node 22
+
+Supabase o Firebase queda para la fase de backend. No está instalado.
 
 ## Arranque
 
@@ -13,56 +21,28 @@ pnpm install
 pnpm dev
 ```
 
-Servidor Vite (puerto `PORT` o **8443**). Scripts: `build`, `preview`, `format` (`oxfmt`).
+Abre `http://localhost:3000`. Scripts: `build`, `start`, `lint`.
 
-## Arquitectura lógica
+## Cómo se mueve el mapa
 
-```
-index.html → src/main.tsx → App (src/App.tsx)
-                              ├─ lee INITIAL_NODES (src/data.ts)
-                              ├─ tabs: mapa | tecnicas | ahorat
-                              ├─ MapView (SVG + edges)
-                              ├─ TechniquesView (filtros + grid)
-                              ├─ AhoraTuView (form + historial mock)
-                              └─ NodeModal (detalle + completar)
-```
+`path` es el historial de nodos en los que el alumno ha entrado.
 
-- **Progreso:** marcar un nodo `completed` recorre el grafo y pasa a `available` a los hijos cuyos padres están todos completados.
-- **Alias:** `@/` apunta a `src/`.
+- En la raíz solo están iluminadas las posturas base: Montada, Guardia cerrada y Media guardia. El resto se ve apagado.
+- Pulsar un nodo iluminado lo apaga (queda recorrido) y enciende a sus hijos.
+- «Volver atrás» deshace un nivel: apaga el nivel actual y vuelve a iluminar el anterior.
+- Si la técnica no tiene hijos, un aviso lo dice. El reproductor de vídeo llega en la fase 2; hoy el clic cambia el mapa al momento.
 
 ## Carpetas y archivos
 
 | Ruta | Para qué sirve |
-|------|----------------|
-| `src/` | Código de la app. Único sitio a tocar para producto. |
-| `src/App.tsx` | UI completa: header, tabs, mapa SVG, listado, formulario, modal. |
-| `src/data.ts` | Tipos del dominio y `INITIAL_NODES` (grafo, textos, tips, coordenadas). |
-| `src/main.tsx` | Monta React en `#root` e importa estilos. |
-| `src/index.css` | Tailwind v4, `@theme`, fuentes, animaciones (pulse, scan, scroll del mapa). |
-| `src/vite-env.d.ts` | Tipos de Vite. |
-| `index.html` | Shell HTML (slots Figma: lang/title). |
-| `vite.config.ts` | Vite + React + Tailwind + plugins Figma Make (site, overlay, kit). |
-| `package.json` / `pnpm-lock.yaml` | Dependencias y scripts. |
-| `tsconfig.json` | TS strict, paths `@/*`. |
-| `.mise.toml` | Versiones: Node 22, pnpm 10. |
-| `.gitignore` | Ignora `node_modules`, `dist`, `.env*`, etc. |
-| `.figma/make/` | Config y scripts del entorno Figma Make (no es lógica de BJJ). |
-| `.figma/make/site.json` | Título/SEO/robots del preview Figma. |
-| `AGENTS.md` / `CLAUDE.md` | Notas del scaffold Figma para agentes. |
-| `.cursorrules` | Directrices de estilo y stack para Cursor. |
-| `TODO.md` | Backlog de trabajo. |
+| --- | --- |
+| `src/app/` | Rutas, layout y estilos globales. |
+| `src/components/technique-map.tsx` | Lienzo, historial y botón de retroceso. |
+| `src/components/technique-node.tsx` | Círculo de cada técnica. |
+| `src/components/ui/` | Componentes de shadcn/ui. |
+| `src/lib/techniques.ts` | Datos de prueba y la regla de qué está iluminado. |
+| `src/lib/utils.ts` | Helper `cn`. |
+| `public/` | No se usa todavía. |
+| `components.json` | Configuración del CLI de shadcn. |
 
-No hay `public/`, tests, router ni carpeta de componentes extraída todavía.
-
-## Superficies de producto
-
-1. **Mapa de técnicas** — canvas SVG (~1050×490), leyenda por categoría, nodos bloqueados/disponibles/completados.
-2. **Técnicas** — stats + filtros categoría/dificultad + tarjetas.
-3. **Ahora Tú** — subida de vídeo (solo estado local) e historial con mocks (`Carlos M.`, `Ana R.`).
-
-## Decisiones actuales (no romperlas sin motivo)
-
-- Un solo árbol de técnicas, no curriculum por cinturón.
-- Completar es auto-servicio del alumno (sin validación de profesor).
-- Vídeo de técnica en el modal: placeholder.
-- Envíos de alumno: UI lista; sin almacenamiento real.
+No hay `public/` con assets, tests, ni carpeta de API.
